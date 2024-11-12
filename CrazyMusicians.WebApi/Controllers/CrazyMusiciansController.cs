@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using CrazyMusicians.Models;
 
-namespace CrazyMusicians.WebApi.Controllers
+namespace CrazyMusicians.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class CrazyMusiciansController : ControllerBase
     {
-        private static List<Musician> musicians = new List<Musician>
+        private static List<Musician> _musicians = new List<Musician>
         {
             new Musician { Id = 1, Name = "Ahmet Çalgi", Profession = "Instrumentalist", FunFact = "Always plays the wrong note but is very fun" },
             new Musician { Id = 2, Name = "Zeynep Melodi", Profession = "Popular Melody Writer", FunFact = "Songs are misunderstood but very popular" },
@@ -25,14 +25,14 @@ namespace CrazyMusicians.WebApi.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Musician>> GetAll()
         {
-            return Ok(musicians);
+            return Ok(_musicians);
         }
 
         // GET: api/CrazyMusicians/{id}
         [HttpGet("{id}")]
         public ActionResult<Musician> GetById(int id)
         {
-            var musician = musicians.FirstOrDefault(m => m.Id == id);
+            var musician = _musicians.FirstOrDefault(m => m.Id == id);
             if (musician == null)
                 return NotFound("Musician not found");
             return Ok(musician);
@@ -42,9 +42,9 @@ namespace CrazyMusicians.WebApi.Controllers
         [HttpGet("search")]
         public ActionResult<IEnumerable<Musician>> SearchByName([FromQuery] string name)
         {
-            var result = musicians.Where(m => m.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
+            var result = _musicians.Where(m => m.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
             if (!result.Any())
-                return NotFound("No musicians found");
+                return NotFound("No _musicians found");
             return Ok(result);
         }
 
@@ -55,8 +55,8 @@ namespace CrazyMusicians.WebApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            newMusician.Id = musicians.Max(m => m.Id) + 1;
-            musicians.Add(newMusician);
+            newMusician.Id = _musicians.Max(m => m.Id) + 1;
+            _musicians.Add(newMusician);
             return CreatedAtAction(nameof(GetById), new { id = newMusician.Id }, newMusician);
         }
         
@@ -67,7 +67,7 @@ namespace CrazyMusicians.WebApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var musician = musicians.FirstOrDefault(m => m.Id == id);
+            var musician = _musicians.FirstOrDefault(m => m.Id == id);
             
             if (musician == null)
                 return NotFound("Musician not found");
@@ -82,7 +82,7 @@ namespace CrazyMusicians.WebApi.Controllers
         [HttpPatch("{id}")]
         public IActionResult PatchMusician(int id, [FromBody] string newFunFact)
         {
-            var musician = musicians.FirstOrDefault(m => m.Id == id);
+            var musician = _musicians.FirstOrDefault(m => m.Id == id);
             if (musician == null)
                 return NotFound("Musician not found");
 
@@ -94,11 +94,11 @@ namespace CrazyMusicians.WebApi.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteMusician(int id)
         {
-            var musician = musicians.FirstOrDefault(m => m.Id == id);
+            var musician = _musicians.FirstOrDefault(m => m.Id == id);
             if (musician == null)
                 return NotFound("Musician not found");
 
-            musicians.Remove(musician);
+            _musicians.Remove(musician);
             return NoContent();
         }
     }
